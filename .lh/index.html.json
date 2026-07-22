@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 10,
+            "activePatchIndex": 11,
             "patches": [
                 {
                     "date": 1784690319538,
@@ -48,6 +48,10 @@
                 {
                     "date": 1784690884947,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -64,9 +64,9 @@\n </div>\n \n <div id=\"section-cn\" class=\"lang-section\">\n   <a class=\"list-item\" href=\"weekly/weekly-2026-07-13_2026-07-19.html\">\n-    <div class=\"d\">2026 - Jul 13th ~ 19th</div>\n+    <div class=\"d\">2026 Jul 13th ~ 19th</div>\n     <div class=\"c\">16 条信息 · 点击查看周报</div>\n   </a>\n </div>\n \n"
+                },
+                {
+                    "date": 1784692363837,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -48,31 +48,33 @@\n              margin-bottom:12px; display:block; text-decoration:none; color:inherit; }\n .list-item:hover { border-color:#16a34a; }\n .list-item .d { font-weight:600; font-size:17px; }\n .list-item .c { font-size:13px; color:#64748b; }\n+.list-item { position: relative; overflow: hidden; }\n+.badge-new { position: absolute; top: 8px; right: 8px; background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: .5px; }\n </style></head>\n <body><div class=\"wrap\">\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n-  <h1>AU Renewable Energy News and Policy Newsprint</h1>\n-  <div class=\"sub\">Last modified : </div>\n+  <h1>AU Renewable Energy News and Policy </h1>\n+  <div class=\"sub\">Last modified: 2026-07-22</div>\n </header>\n \n <div class=\"lang-toggle\">\n   <button id=\"btn-cn\" class=\"active\" onclick=\"switchLang('cn')\">中文</button>\n   <button id=\"btn-en\" onclick=\"switchLang('en')\">EN</button>\n </div>\n \n <div id=\"section-cn\" class=\"lang-section\">\n-  <a class=\"list-item\" href=\"weekly/weekly-2026-07-13_2026-07-19.html\">\n+  <a class=\"list-item\" href=\"weekly/weekly-2026-07-13_2026-07-19.html\" style=\"position:relative;overflow:hidden\"><span class=\"badge-new\">NEW</span>\n     <div class=\"d\">2026 Jul 13th ~ 19th</div>\n     <div class=\"c\">16 条信息 · 点击查看周报</div>\n   </a>\n </div>\n \n <div id=\"section-en\" class=\"lang-section\" style=\"display:none\">\n-  <a class=\"list-item\" href=\"weekly/weekly-2026-07-13_2026-07-19_en.html\">\n+  <a class=\"list-item\" href=\"weekly/weekly-2026-07-13_2026-07-19_en.html\" style=\"position:relative;overflow:hidden\"><span class=\"badge-new\">NEW</span>\n     <div class=\"d\">2026  Jul 13th ~ 19th </div>\n     <div class=\"c\">16 items · Weekly Briefing</div>\n   </a>\n </div>\n"
                 }
             ],
             "date": 1784690319538,
