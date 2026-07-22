@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1784690319538,
@@ -24,6 +24,14 @@
                 {
                     "date": 1784690448780,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,9 +54,9 @@\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n   <h1>Renewable Energy News in AU</h1>\n-  <div class=\"sub\">Solar / BESS / Wind in Australia </div>\n+  <div class=\"sub\">Solar / BESS / Wind / Renewable Energy in Australia | Update weekly </div>\n </header>\n \n <div class=\"lang-toggle\">\n   <button id=\"btn-cn\" class=\"active\" onclick=\"switchLang('cn')\">中文</button>\n"
+                },
+                {
+                    "date": 1784690608753,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n header.hero { background: #fff; border-radius: 16px; padding: 24px 24px 16px;\n               margin-bottom: 24px; text-align: center;\n               border-top: 5px solid #16a34a;\n               box-shadow: 0 1px 3px rgba(0,0,0,.06); }\n-header.hero img.logo { height: 180px; margin-bottom: 0px; }\n+header.hero img.logo { height: 200px; margin-bottom: 0px; }\n header.hero h1 { font-size: 24px; color: #166534; margin-bottom: 6px; }\n header.hero .sub { font-size: 14px; color: #64748b; }\n \n /* Language toggle */\n@@ -71,9 +71,9 @@\n </div>\n \n <div id=\"section-en\" class=\"lang-section\" style=\"display:none\">\n   <a class=\"list-item\" href=\"weekly/weekly-2026-07-13_2026-07-19_en.html\">\n-    <div class=\"d\">2026 - Jul 13th ~ 19th </div>\n+    <div class=\"d\">2026  Jul 13th ~ 19th </div>\n     <div class=\"c\">16 items · Weekly Briefing</div>\n   </a>\n </div>\n \n"
+                },
+                {
+                    "date": 1784690645049,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,9 +54,9 @@\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n   <h1>Renewable Energy News in AU</h1>\n-  <div class=\"sub\">Solar / BESS / Wind / Renewable Energy in Australia | Update weekly </div>\n+  <div class=\"sub\">Last modified : </div>\n </header>\n \n <div class=\"lang-toggle\">\n   <button id=\"btn-cn\" class=\"active\" onclick=\"switchLang('cn')\">中文</button>\n"
                 }
             ],
             "date": 1784690319538,
