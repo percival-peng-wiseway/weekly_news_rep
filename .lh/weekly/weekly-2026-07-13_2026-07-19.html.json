@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1784690251633,
@@ -20,6 +20,10 @@
                 {
                     "date": 1784692394629,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,9 +32,9 @@\n <a class=\"back\" href=\"../index.html\">← All Briefings</a>\n <header class=\"hero\">\n   <img class=\"logo\" src=\"../gcgf_logo.png\" alt=\"GCGF Logo\">\n   <h1>Renewable Energy News in AU</h1>\n-  <div class=\"sub\">2026-07-13 ~ 2026-07-19 · 16 items</div>\n+  <div class=\"sub\">2026-07-13 ~ 2026-07-19 · 16 items </div>\n </header>\n <nav class=\"toc\"><a href=\"#s0\">政策与监管</a><a href=\"#s1\">储能 BESS</a><a href=\"#s2\">太阳能 Solar</a><a href=\"#s3\">风电 Wind</a><a href=\"#s4\">公司与项目动向</a></nav>\n \n <h2 class=\"sec\" id=\"s0\">政策与监管</h2>\n"
+                },
+                {
+                    "date": 1784692651470,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,9 +31,9 @@\n <body><div class=\"wrap\">\n <a class=\"back\" href=\"../index.html\">← All Briefings</a>\n <header class=\"hero\">\n   <img class=\"logo\" src=\"../gcgf_logo.png\" alt=\"GCGF Logo\">\n-  <h1>Renewable Energy News in AU</h1>\n+  <h1>Renewable Energy in AU</h1>\n   <div class=\"sub\">2026-07-13 ~ 2026-07-19 · 16 items </div>\n </header>\n <nav class=\"toc\"><a href=\"#s0\">政策与监管</a><a href=\"#s1\">储能 BESS</a><a href=\"#s2\">太阳能 Solar</a><a href=\"#s3\">风电 Wind</a><a href=\"#s4\">公司与项目动向</a></nav>\n \n"
                 }
             ],
             "date": 1784690251633,

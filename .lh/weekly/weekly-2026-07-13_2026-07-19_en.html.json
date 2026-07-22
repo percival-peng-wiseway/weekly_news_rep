@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1784692408167,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1784692662084,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,9 +31,9 @@\n <body><div class=\"wrap\">\n <a class=\"back\" href=\"../index.html\">← All Briefings</a>\n <header class=\"hero\">\n   <img class=\"logo\" src=\"../gcgf_logo.png\" alt=\"GCGF Logo\">\n-  <h1>Renewable Energy News in AU</h1>\n+  <h1>Renewable Energy in AU</h1>\n   <div class=\"sub\">Jul 13 ~ 19, 2026 · 16 items </div>\n </header>\n <nav class=\"toc\"><a href=\"#s0\">Policy & Regulation</a><a href=\"#s1\">Energy Storage (BESS)</a><a href=\"#s2\">Solar</a><a href=\"#s3\">Wind</a><a href=\"#s4\">Corporate & Project Developments</a></nav>\n \n"
                 }
             ],
             "date": 1784692408167,
