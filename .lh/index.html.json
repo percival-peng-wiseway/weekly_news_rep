@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1784690319538,
@@ -16,6 +16,14 @@
                 {
                     "date": 1784690370638,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -64,9 +64,9 @@\n </div>\n \n <div id=\"section-cn\" class=\"lang-section\">\n   <a class=\"list-item\" href=\"weekly/weekly-2026-07-13_2026-07-19.html\">\n-    <div class=\"d\">2026-07-13 ~ 2026-07-19</div>\n+    <div class=\"d\">2026 - Jul 13th ~ 19th</div>\n     <div class=\"c\">16 条信息 · 点击查看周报</div>\n   </a>\n </div>\n \n"
+                },
+                {
+                    "date": 1784690424454,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,9 +54,9 @@\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n   <h1>Renewable Energy News in AU</h1>\n-  <div class=\"sub\">Solar / BESS / Wind · Accuracy-first · Every item traceable to original source</div>\n+  <div class=\"sub\">Solar / BESS / Wind in Australia </div>\n </header>\n \n <div class=\"lang-toggle\">\n   <button id=\"btn-cn\" class=\"active\" onclick=\"switchLang('cn')\">中文</button>\n"
+                },
+                {
+                    "date": 1784690448780,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,9 +54,9 @@\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n   <h1>Renewable Energy News in AU</h1>\n-  <div class=\"sub\">Solar / BESS / Wind in Australia </div>\n+  <div class=\"sub\">Solar / BESS / Wind / Renewable Energy in Australia | Update weekly </div>\n </header>\n \n <div class=\"lang-toggle\">\n   <button id=\"btn-cn\" class=\"active\" onclick=\"switchLang('cn')\">中文</button>\n"
                 }
             ],
             "date": 1784690319538,
