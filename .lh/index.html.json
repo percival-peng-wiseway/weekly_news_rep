@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 6,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1784690319538,
@@ -32,6 +32,18 @@
                 {
                     "date": 1784690645049,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,9 +54,9 @@\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n   <h1>Renewable Energy News in AU</h1>\n-  <div class=\"sub\">Solar / BESS / Wind / Renewable Energy in Australia | Update weekly </div>\n+  <div class=\"sub\">Last modified : </div>\n </header>\n \n <div class=\"lang-toggle\">\n   <button id=\"btn-cn\" class=\"active\" onclick=\"switchLang('cn')\">中文</button>\n"
+                },
+                {
+                    "date": 1784690759630,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,10 +13,10 @@\n               margin-bottom: 24px; text-align: center;\n               border-top: 5px solid #16a34a;\n               box-shadow: 0 1px 3px rgba(0,0,0,.06); }\n header.hero img.logo { height: 200px; margin-bottom: 0px; }\n-header.hero h1 { font-size: 24px; color: #166534; margin-bottom: 6px; }\n-header.hero .sub { font-size: 14px; color: #64748b; }\n+header.hero h1 { font-size: 30px; color: #166534; margin-bottom: 2px; }\n+header.hero .sub { font-size: 16px; color: #64748b; }\n \n /* Language toggle */\n .lang-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 24px; }\n .lang-toggle button { border: 1px solid #d1d5db; background: #fff; color: #64748b;\n"
+                },
+                {
+                    "date": 1784690772418,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,9 +14,9 @@\n               border-top: 5px solid #16a34a;\n               box-shadow: 0 1px 3px rgba(0,0,0,.06); }\n header.hero img.logo { height: 200px; margin-bottom: 0px; }\n header.hero h1 { font-size: 30px; color: #166534; margin-bottom: 2px; }\n-header.hero .sub { font-size: 16px; color: #64748b; }\n+header.hero .sub { font-size: 16fpx; color: #64748b; }\n \n /* Language toggle */\n .lang-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 24px; }\n .lang-toggle button { border: 1px solid #d1d5db; background: #fff; color: #64748b;\n@@ -53,9 +53,9 @@\n <body><div class=\"wrap\">\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n-  <h1>Renewable Energy News in AU</h1>\n+  <h1>Renewable Energy News and Policy in AU</h1>\n   <div class=\"sub\">Last modified : </div>\n </header>\n \n <div class=\"lang-toggle\">\n"
+                },
+                {
+                    "date": 1784690811101,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,9 +53,9 @@\n <body><div class=\"wrap\">\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n-  <h1>Renewable Energy News and Policy in AU</h1>\n+  <h1>AU Renewable Energy News and Policy Newsprint</h1>\n   <div class=\"sub\">Last modified : </div>\n </header>\n \n <div class=\"lang-toggle\">\n"
                 }
             ],
             "date": 1784690319538,
