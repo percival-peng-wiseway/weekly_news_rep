@@ -1,20 +1,40 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="utf-8">
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Renewable Energy NEWs in AU</title><style>
+<title>Renewable Energy News in AU</title>
+<style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
        background: #f8fafc; color: #1e293b; line-height: 1.7; }
 .wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
-header.hero { background: linear-gradient(135deg, #0f172a, #14532d); color: #fff;
-              border-radius: 16px; padding: 28px 24px; margin-bottom: 24px; text-align: center; }
-header.hero img.logo { height: 56px; margin-bottom: 14px; }
-header.hero h1 { font-size: 24px; margin-bottom: 6px; }
-header.hero .sub { opacity: .75; font-size: 14px; }
+
+/* Hero */
+header.hero { background: #fff; border-radius: 16px; padding: 36px 24px 28px;
+              margin-bottom: 24px; text-align: center;
+              border-top: 5px solid #16a34a;
+              box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+header.hero img.logo { height: 88px; margin-bottom: 18px; }
+header.hero h1 { font-size: 24px; color: #166534; margin-bottom: 6px; }
+header.hero .sub { font-size: 14px; color: #64748b; }
+
+/* Language toggle */
+.lang-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 24px; }
+.lang-toggle button { border: 1px solid #d1d5db; background: #fff; color: #64748b;
+  padding: 8px 24px; cursor: pointer; font-size: 14px; font-weight: 500;
+  transition: all .15s; }
+.lang-toggle button:first-child { border-radius: 8px 0 0 8px; }
+.lang-toggle button:last-child { border-radius: 0 8px 8px 0; }
+.lang-toggle button.active { background: #16a34a; color: #fff; border-color: #16a34a; }
+
+/* Section labels */
+.lang-section h3 { font-size: 14px; color: #94a3b8; text-transform: uppercase;
+  letter-spacing: .5px; margin-bottom: 10px; }
+
+/* Cards */
 nav.toc { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
           padding: 12px 16px; margin-bottom: 24px; font-size: 14px; }
 nav.toc a { color: #2563eb; text-decoration: none; margin-right: 14px; white-space: nowrap; }
-h2.sec { font-size: 18px; margin: 32px 0 12px; padding-left: 12px; border-left: 5px solid #334155; }
+h2.sec { font-size: 18px; margin: 32px 0 12px; padding-left: 12px; border-left: 5px solid #16a34a; }
 .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
         padding: 14px 18px; margin-bottom: 12px; }
 .card .title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
@@ -26,21 +46,48 @@ footer.src li { margin-left: 20px; }
 a.back { color: #2563eb; text-decoration: none; font-size: 14px; }
 .list-item { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px 20px;
              margin-bottom:12px; display:block; text-decoration:none; color:inherit; }
-.list-item:hover { border-color:#2563eb; }
+.list-item:hover { border-color:#16a34a; }
 .list-item .d { font-weight:600; font-size:17px; }
 .list-item .c { font-size:13px; color:#64748b; }
 </style></head>
 <body><div class="wrap">
+
 <header class="hero">
   <img class="logo" src="gcgf_logo.png" alt="GCGF Logo">
-  <h1>澳洲新能源市场周报</h1>
-  <div class="sub">Solar / BESS / Wind · 准确度优先 · 每条附原始来源可回溯</div>
+  <h1>Renewable Energy News in AU</h1>
+  <div class="sub">Solar / BESS / Wind · Accuracy-first · Every item traceable to original source</div>
 </header>
-<a class="list-item" href="weekly/weekly-2026-07-13_2026-07-19.html">
-  <div class="d">📅 2026-07-13 ~ 2026-07-19</div>
-  <div class="c">16 条信息 · 点击查看周报</div>
-</a>
+
+<div class="lang-toggle">
+  <button id="btn-cn" class="active" onclick="switchLang('cn')">中文</button>
+  <button id="btn-en" onclick="switchLang('en')">EN</button>
+</div>
+
+<div id="section-cn" class="lang-section">
+  <a class="list-item" href="weekly/weekly-2026-07-13_2026-07-19.html">
+    <div class="d">📅 2026-07-13 ~ 2026-07-19</div>
+    <div class="c">16 条信息 · 点击查看周报</div>
+  </a>
+</div>
+
+<div id="section-en" class="lang-section" style="display:none">
+  <a class="list-item" href="weekly/weekly-2026-07-13_2026-07-19_en.html">
+    <div class="d">📅 Jul 13 ~ 19, 2026</div>
+    <div class="c">16 items · Weekly Briefing</div>
+  </a>
+</div>
+
 <footer style="margin-top:40px;text-align:center;font-size:13px;color:#94a3b8">
-  powered by <a href="https://github.com/nousresearch/hermes-agent" style="color:#2563eb;text-decoration:none">Hermes Agent</a> · 数据来源见各期简报末尾
+  powered by <a href="https://github.com/nousresearch/hermes-agent" style="color:#2563eb;text-decoration:none">Hermes Agent</a>
 </footer>
-</div></body></html>
+
+</div>
+<script>
+function switchLang(lang) {
+  document.getElementById('btn-cn').classList.toggle('active', lang==='cn');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+  document.getElementById('section-cn').style.display = lang==='cn' ? '' : 'none';
+  document.getElementById('section-en').style.display = lang==='en' ? '' : 'none';
+}
+</script>
+</body></html>
