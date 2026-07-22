@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1784690319538,
@@ -44,6 +44,10 @@
                 {
                     "date": 1784690811101,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,9 +53,9 @@\n <body><div class=\"wrap\">\n \n <header class=\"hero\">\n   <img class=\"logo\" src=\"gcgf_logo.png\" alt=\"GCGF Logo\">\n-  <h1>Renewable Energy News and Policy in AU</h1>\n+  <h1>AU Renewable Energy News and Policy Newsprint</h1>\n   <div class=\"sub\">Last modified : </div>\n </header>\n \n <div class=\"lang-toggle\">\n"
+                },
+                {
+                    "date": 1784690884947,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -64,9 +64,9 @@\n </div>\n \n <div id=\"section-cn\" class=\"lang-section\">\n   <a class=\"list-item\" href=\"weekly/weekly-2026-07-13_2026-07-19.html\">\n-    <div class=\"d\">2026 - Jul 13th ~ 19th</div>\n+    <div class=\"d\">2026 Jul 13th ~ 19th</div>\n     <div class=\"c\">16 条信息 · 点击查看周报</div>\n   </a>\n </div>\n \n"
                 }
             ],
             "date": 1784690319538,
