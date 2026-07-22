@@ -49,6 +49,8 @@ a.back { color: #2563eb; text-decoration: none; font-size: 14px; }
 .list-item:hover { border-color:#16a34a; }
 .list-item .d { font-weight:600; font-size:17px; }
 .list-item .c { font-size:13px; color:#64748b; }
+.list-item { position: relative; overflow: hidden; }
+.badge-new { position: absolute; top: 8px; right: 8px; background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: .5px; }
 </style></head>
 <body><div class="wrap">
 
@@ -58,20 +60,22 @@ a.back { color: #2563eb; text-decoration: none; font-size: 14px; }
   <div class="sub">Last modified : </div>
 </header>
 
+<div style="text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px">Last updated: 2026-07-22</div>
+
 <div class="lang-toggle">
   <button id="btn-cn" class="active" onclick="switchLang('cn')">中文</button>
   <button id="btn-en" onclick="switchLang('en')">EN</button>
 </div>
 
 <div id="section-cn" class="lang-section">
-  <a class="list-item" href="weekly/weekly-2026-07-13_2026-07-19.html">
+  <a class="list-item" style="position:relative;overflow:hidden"><span class="badge-new">NEW</span> href="weekly/weekly-2026-07-13_2026-07-19.html">
     <div class="d">2026 Jul 13th ~ 19th</div>
     <div class="c">16 条信息 · 点击查看周报</div>
   </a>
 </div>
 
 <div id="section-en" class="lang-section" style="display:none">
-  <a class="list-item" href="weekly/weekly-2026-07-13_2026-07-19_en.html">
+  <a class="list-item" style="position:relative;overflow:hidden"><span class="badge-new">NEW</span> href="weekly/weekly-2026-07-13_2026-07-19_en.html">
     <div class="d">2026  Jul 13th ~ 19th </div>
     <div class="c">16 items · Weekly Briefing</div>
   </a>
