@@ -16,7 +16,7 @@ header.hero { background: #fff; border-radius: 16px; padding: 24px 24px 16px;
               box-shadow: 0 1px 3px rgba(0,0,0,.06); }
 header.hero img.logo { height: 200px; margin-bottom: 0px; }
 header.hero h1 { font-size: 30px; color: #166534; margin-bottom: 2px; }
-header.hero .sub { font-size: 16fpx; color: #64748b; }
+header.hero .sub { font-size: 14px; color: #64748b; }
 
 /* Language toggle */
 .lang-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 24px; }
@@ -27,38 +27,51 @@ header.hero .sub { font-size: 16fpx; color: #64748b; }
 .lang-toggle button:last-child { border-radius: 0 8px 8px 0; }
 .lang-toggle button.active { background: #16a34a; color: #fff; border-color: #16a34a; }
 
-/* Section labels */
+/* Language sections */
 .lang-section h3 { font-size: 14px; color: #94a3b8; text-transform: uppercase;
   letter-spacing: .5px; margin-bottom: 10px; }
 
-/* Cards */
-nav.toc { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-          padding: 12px 16px; margin-bottom: 24px; font-size: 14px;
-          display: flex; flex-wrap: wrap; gap: 4px 14px; }
-nav.toc a { color: #2563eb; text-decoration: none; white-space: nowrap; }
-h2.sec { font-size: 18px; margin: 32px 0 12px; padding-left: 12px; border-left: 5px solid #16a34a; }
-.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-        padding: 14px 18px; margin-bottom: 12px; }
-.card .title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
-.card .meta { font-size: 13px; color: #64748b; margin-bottom: 6px; }
-.card .meta a { color: #2563eb; text-decoration: none; word-break: break-all; }
-.card .point { font-size: 14.5px; }
-footer.src { margin-top: 40px; font-size: 13px; color: #64748b; }
-footer.src li { margin-left: 20px; }
-a.back { color: #2563eb; text-decoration: none; font-size: 14px; }
-.list-item { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px 20px;
-             margin-bottom:12px; display:block; text-decoration:none; color:inherit; }
-.list-item:hover { border-color:#16a34a; }
-.list-item .d { font-weight:600; font-size:17px; }
-.list-item .c { font-size:13px; color:#64748b; }
-.list-item { position: relative; overflow: hidden; }
-.badge-new { position: absolute; top: 8px; right: 8px; background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: .5px; }
+/* Week card */
+.week-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+             margin-bottom: 12px; overflow: hidden; }
+.week-header { display: flex; align-items: center; justify-content: space-between;
+               padding: 16px 20px; cursor: pointer; user-select: none;
+               transition: background .15s; }
+.week-header:hover { background: #f0fdf4; }
+.week-header .left { display: flex; align-items: center; gap: 12px; }
+.week-header .arrow { font-size: 12px; color: #94a3b8; transition: transform .2s; }
+.week-header.open .arrow { transform: rotate(90deg); }
+.week-header .wlabel { font-weight: 600; font-size: 17px; color: #1e293b; }
+.week-header .wmeta { font-size: 13px; color: #64748b; margin-left: 8px; }
+.badge-new { background: #dc2626; color: #fff; font-size: 11px; font-weight: 700;
+             padding: 3px 8px; border-radius: 4px; text-transform: uppercase;
+             letter-spacing: .5px; }
+
+/* Daily entries (collapsed by default, expands downward) */
+.week-body { display: none; border-top: 1px solid #e2e8f0; padding: 8px 0; }
+.week-body.open { display: block; }
+.daily-link { display: flex; align-items: center; padding: 10px 20px 10px 36px;
+              color: #2563eb; text-decoration: none; font-size: 15px;
+              transition: background .1s; }
+.daily-link:hover { background: #f8fafc; }
+.daily-link .dot { width: 6px; height: 6px; background: #16a34a; border-radius: 50%;
+                   margin-right: 12px; flex-shrink: 0; }
+.daily-link .dlabel { flex: 1; }
+.daily-link .dcount { font-size: 13px; color: #64748b; white-space: nowrap; }
+.weekly-link { display: flex; align-items: center; padding: 10px 20px 10px 36px;
+               color: #166534; text-decoration: none; font-size: 15px; font-weight: 600;
+               transition: background .1s; }
+.weekly-link:hover { background: #f8fafc; }
+.weekly-link .star { font-size: 14px; margin-right: 10px; }
+
+footer { margin-top: 40px; text-align: center; font-size: 13px; color: #94a3b8; }
+footer a { color: #2563eb; text-decoration: none; }
 </style></head>
 <body><div class="wrap">
 
 <header class="hero">
   <img class="logo" src="gcgf_logo.png" alt="GCGF Logo">
-  <h1>AU Renewable Energy News and Policy </h1>
+  <h1>AU Renewable Energy News and Policy</h1>
   <div class="sub">Last modified: 2026-07-24</div>
 </header>
 
@@ -67,35 +80,109 @@ a.back { color: #2563eb; text-decoration: none; font-size: 14px; }
   <button id="btn-en" onclick="switchLang('en')">EN</button>
 </div>
 
+<!-- ====== CN Section ====== -->
 <div id="section-cn" class="lang-section">
-  <a class="list-item" href="weekly/2026-07-21.html" style="position:relative;overflow:hidden"><span class="badge-new">NEW</span>
-    <div class="d">2026 Jul 21st</div>
-    <div class="c">25 条信息 · 日简报</div>
-  </a>
-  <a class="list-item" href="weekly/weekly-2026-07-13_2026-07-19.html">
-    <div class="d">2026 Jul 13th ~ 19th</div>
-    <div class="c">16 条信息 · 周报</div>
-  </a>
+
+  <!-- Week Jul 21 ~ 25 -->
+  <div class="week-card">
+    <div class="week-header" onclick="toggleWeek(this)">
+      <div class="left">
+        <span class="arrow">▶</span>
+        <span class="wlabel">2026 Jul 21st ~ 25th</span>
+        <span class="wmeta">Week 30</span>
+      </div>
+      <span class="badge-new">NEW</span>
+    </div>
+    <div class="week-body">
+      <a class="daily-link" href="weekly/2026-07-21.html">
+        <span class="dot"></span>
+        <span class="dlabel">7月21日（周一）</span>
+        <span class="dcount">25 条</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Week Jul 13 ~ 19 -->
+  <div class="week-card">
+    <div class="week-header" onclick="toggleWeek(this)">
+      <div class="left">
+        <span class="arrow">▶</span>
+        <span class="wlabel">2026 Jul 13th ~ 19th</span>
+        <span class="wmeta">Week 29</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <a class="weekly-link" href="weekly/weekly-2026-07-13_2026-07-19.html">
+        <span class="star">★</span>
+        <span class="dlabel">周报总结</span>
+        <span class="dcount">16 条</span>
+      </a>
+    </div>
+  </div>
+
 </div>
 
+<!-- ====== EN Section ====== -->
 <div id="section-en" class="lang-section" style="display:none">
-  <a class="list-item" href="weekly/2026-07-21_en.html" style="position:relative;overflow:hidden"><span class="badge-new">NEW</span>
-    <div class="d">2026 Jul 21st</div>
-    <div class="c">25 items · Daily Brief</div>
-  </a>
-  <a class="list-item" href="weekly/weekly-2026-07-13_2026-07-19_en.html">
-    <div class="d">2026 Jul 13th ~ 19th</div>
-    <div class="c">16 items · Weekly Brief</div>
-  </a>
+
+  <!-- Week Jul 21 ~ 25 -->
+  <div class="week-card">
+    <div class="week-header" onclick="toggleWeek(this)">
+      <div class="left">
+        <span class="arrow">▶</span>
+        <span class="wlabel">2026 Jul 21st ~ 25th</span>
+        <span class="wmeta">Week 30</span>
+      </div>
+      <span class="badge-new">NEW</span>
+    </div>
+    <div class="week-body">
+      <a class="daily-link" href="weekly/2026-07-21_en.html">
+        <span class="dot"></span>
+        <span class="dlabel">Jul 21 (Mon)</span>
+        <span class="dcount">25 items</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Week Jul 13 ~ 19 -->
+  <div class="week-card">
+    <div class="week-header" onclick="toggleWeek(this)">
+      <div class="left">
+        <span class="arrow">▶</span>
+        <span class="wlabel">2026 Jul 13th ~ 19th</span>
+        <span class="wmeta">Week 29</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <a class="weekly-link" href="weekly/weekly-2026-07-13_2026-07-19_en.html">
+        <span class="star">★</span>
+        <span class="dlabel">Weekly Summary</span>
+        <span class="dcount">16 items</span>
+      </a>
+    </div>
+  </div>
+
 </div>
 
-<footer style="margin-top:40px;text-align:center;font-size:13px;color:#94a3b8">
-  powered by <a href="https://www.wiseway.ai/" style="color:#2563eb;text-decoration:none">Wiseway.ai</a>
-</footer>
+<footer>
+  powered by <a href="https://www.wiseway.ai/">Wiseway.ai</a>
 </footer>
 
 </div>
+
 <script>
+function toggleWeek(header) {
+  var body = header.nextElementSibling;
+  var open = body.classList.contains('open');
+  // Close all others
+  document.querySelectorAll('.week-body.open').forEach(function(b) { b.classList.remove('open'); });
+  document.querySelectorAll('.week-header').forEach(function(h) { h.classList.remove('open'); });
+  if (!open) {
+    body.classList.add('open');
+    header.classList.add('open');
+  }
+}
+
 function switchLang(lang) {
   document.getElementById('btn-cn').classList.toggle('active', lang==='cn');
   document.getElementById('btn-en').classList.toggle('active', lang==='en');
