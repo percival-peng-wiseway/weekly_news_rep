@@ -62,6 +62,8 @@ a.back { color: #2563eb; text-decoration: none; font-size: 14px; }
 .week-body .sub-item:hover { border-color: #16a34a; background: #fff; }
 .week-body .sub-item .sd { font-weight: 600; font-size: 15px; }
 .week-body .sub-item .sc { font-size: 12px; color: #64748b; margin-top: 2px; }
+.week-body .weekly-card { background: #f0fdf4; border: 1.5px solid #16a34a; border-radius: 10px; }
+.week-body .weekly-card:hover { background: #dcfce7; }
 
 /* ── lang toggle ── */
 .lang-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 24px; }
@@ -187,6 +189,10 @@ def build_index(daily_entries, weekly_entry, wk_label):
 <div class="c">{wk_cn} 条信息 · 点击展开/收起周报</div>
 </div>
 <div class="week-body" id="week-body-cn">
+<a class="sub-item weekly-card" href="weekly/{wk_slug}_cn.html">
+  <div class="sd">📋 本周精选周报</div>
+  <div class="sc">{wk_cn} 条要闻 · 点击阅读完整周报</div>
+</a>
 """
 
     for d, cn, en in daily_entries:
@@ -200,6 +206,10 @@ def build_index(daily_entries, weekly_entry, wk_label):
 <div class="c">{wk_en} items · Click to expand/collapse</div>
 </div>
 <div class="week-body" id="week-body-en">
+<a class="sub-item weekly-card" href="weekly/{wk_slug}.html">
+  <div class="sd">📋 Weekly Highlights</div>
+  <div class="sc">{wk_en} items · Read full weekly report</div>
+</a>
 """
 
     for d, cn, en in daily_entries:
@@ -301,7 +311,7 @@ def main():
     # ── 5. Build new index.html ──
     index_html = build_index(
         daily_entries=daily,
-        weekly_entry=(wk_slug, wk_cn_count, wk_en_count, False),
+        weekly_entry=(wk_slug, wk_cn_count, wk_en_count, True),
         wk_label=wk_label
     )
     (ROOT / "index.html").write_text(index_html, encoding="utf-8")
