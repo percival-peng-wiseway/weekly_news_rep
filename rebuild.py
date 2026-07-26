@@ -247,7 +247,7 @@ function switchLang(lang) {
 {en_weekly}
 </div>
 <footer style="margin-top:40px;text-align:center;font-size:13px;color:#94a3b8">
-  powered by <a href="https://github.com/nousresearch/hermes-agent" style="color:#2563eb;text-decoration:none">Hermes Agent</a>
+  powered by <a href="https://wiseway.ai" style="color:#2563eb;text-decoration:none">Wiseway.ai</a>
 </footer>
 </div>
 {js}
