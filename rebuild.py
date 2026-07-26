@@ -285,7 +285,7 @@ def main():
 
     # ── 3. Count items in daily briefing HTMLs ──
     daily = []
-    for d in ["2026-07-21", "2026-07-22", "2026-07-23"]:
+    for d in ["2026-07-21", "2026-07-22", "2026-07-23", "2026-07-24"]:
         cn_path = WEEKLY_DIR / f"{d}.html"
         en_path = WEEKLY_DIR / f"{d}_en.html"
         cn_count = 0
