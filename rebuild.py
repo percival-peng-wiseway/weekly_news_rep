@@ -170,11 +170,12 @@ def render_weekly_html(md_path: Path, is_cn: bool = False) -> str:
 </div></body></html>"""
 
 
-def build_index(daily_entries, weekly_entry):
+def build_index(daily_entries, weekly_entry, wk_label):
     """Build index.html with accordion layout.
 
     daily_entries: [(date_str, count_cn, count_en), ...]
     weekly_entry: (slug, count_cn, count_en, has_new)
+    wk_label: display label e.g. "2026-07-20 ~ 2026-07-25"
     """
     today = date.today().strftime("%Y-%m-%d")
     wk_slug, wk_cn, wk_en, has_new = weekly_entry
@@ -182,7 +183,7 @@ def build_index(daily_entries, weekly_entry):
     # ── Chinese section ──
     badge = '<span class="badge-new">NEW</span>' if has_new else ''
     cn_weekly = f"""<div class="week-toggle list-item" onclick="toggleWeek(this)" style="position:relative;overflow:hidden">
-{badge}<span class="arrow">▶</span> <span class="d">📅 2026-07-20 ~ 2026-07-25</span>
+{badge}<span class="arrow">▶</span> <span class="d">📅 {wk_label}</span>
 <div class="c">{wk_cn} 条信息 · 点击展开/收起周报</div>
 </div>
 <div class="week-body" id="week-body-cn">
@@ -195,7 +196,7 @@ def build_index(daily_entries, weekly_entry):
 
     # ── English section ──
     en_weekly = f"""<div class="week-toggle list-item" onclick="toggleWeek(this)" style="position:relative;overflow:hidden">
-{badge}<span class="arrow">▶</span> <span class="d">📅 2026-07-20 ~ 2026-07-25</span>
+{badge}<span class="arrow">▶</span> <span class="d">📅 {wk_label}</span>
 <div class="c">{wk_en} items · Click to expand/collapse</div>
 </div>
 <div class="week-body" id="week-body-en">
@@ -254,66 +255,54 @@ function switchLang(lang) {
 
 
 def main():
-    # ── 1. Generate missing weekly HTML files ──
-    # EN version
-    en_md = BRIEFINGS / "weekly-2026-07-20_2026-07-25.md"
-    if en_md.exists():
-        en_html = render_weekly_html(en_md, is_cn=False)
-        (WEEKLY_DIR / "weekly-2026-07-20_2026-07-25.html").write_text(en_html, encoding="utf-8")
-        print("Generated: weekly-2026-07-20_2026-07-25.html")
+    # ── 1. Auto-discover weekly markdowns, generate HTML ──
+    weekly_mds = sorted(BRIEFINGS.glob("weekly-*.md"), reverse=True)
+    for md_path in weekly_mds:
+        is_cn = md_path.stem.endswith("_cn")
+        html_name = md_path.stem + ".html"
+        html_path = WEEKLY_DIR / html_name
+        html_content = render_weekly_html(md_path, is_cn=is_cn)
+        html_path.write_text(html_content, encoding="utf-8")
+        print(f"Generated: {html_name}")
 
-    # CN version
-    cn_md = BRIEFINGS / "weekly-2026-07-20_2026-07-25_cn.md"
-    if cn_md.exists():
-        cn_html = render_weekly_html(cn_md, is_cn=True)
-        (WEEKLY_DIR / "weekly-2026-07-20_2026-07-25_cn.html").write_text(cn_html, encoding="utf-8")
-        print("Generated: weekly-2026-07-20_2026-07-25_cn.html")
+    # ── 2. Remove stale weekly HTMLs without matching .md ──
+    for html_path in WEEKLY_DIR.glob("weekly-*.html"):
+        md_stem = html_path.stem
+        if not (BRIEFINGS / f"{md_stem}.md").exists():
+            html_path.unlink()
+            print(f"Removed stale: {html_path.name}")
 
-    # ── 2. Remove unwanted files ──
-    to_remove = [
-        "2026-07-26.html",
-        "weekly-2026-07-13_2026-07-19.html",
-        "weekly-2026-07-13_2026-07-19_en.html",
-        "weekly-2026-07-20_2026-07-24.html",
-        "weekly-2026-07-20_2026-07-24_cn.html",
-    ]
-    for fname in to_remove:
-        fpath = WEEKLY_DIR / fname
-        if fpath.exists():
-            fpath.unlink()
-            print(f"Removed: {fname}")
-
-    # ── 3. Count items in daily briefing HTMLs ──
+    # ── 3. Auto-discover daily briefing HTMLs (date-named, exclude _en and weekly) ──
+    daily_files = sorted(
+        [p.stem for p in WEEKLY_DIR.glob("20*.html")
+         if not p.stem.startswith("weekly") and not p.stem.endswith("_en")],
+        reverse=True
+    )
     daily = []
-    for d in ["2026-07-21", "2026-07-22", "2026-07-23", "2026-07-24"]:
+    for d in daily_files:
         cn_path = WEEKLY_DIR / f"{d}.html"
         en_path = WEEKLY_DIR / f"{d}_en.html"
-        cn_count = 0
-        en_count = 0
-        if cn_path.exists():
-            cn_text = cn_path.read_text(encoding="utf-8")
-            cn_count = cn_text.count('<div class="card">')
-        if en_path.exists():
-            en_text = en_path.read_text(encoding="utf-8")
-            en_count = en_text.count('<div class="card">')
+        cn_count = cn_path.read_text(encoding="utf-8").count('<div class="card">') if cn_path.exists() else 0
+        en_count = en_path.read_text(encoding="utf-8").count('<div class="card">') if en_path.exists() else 0
         daily.append((d, cn_count, en_count))
         print(f"  {d}: CN={cn_count}, EN={en_count}")
 
-    # ── 4. Count weekly items ──
-    wk_cn_count = 0
-    wk_en_count = 0
-    wk_cn_path = WEEKLY_DIR / "weekly-2026-07-20_2026-07-25_cn.html"
-    wk_en_path = WEEKLY_DIR / "weekly-2026-07-20_2026-07-25.html"
-    if wk_cn_path.exists():
-        wk_cn_count = wk_cn_path.read_text(encoding="utf-8").count('<div class="card">')
-    if wk_en_path.exists():
-        wk_en_count = wk_en_path.read_text(encoding="utf-8").count('<div class="card">')
-    print(f"  Weekly: CN={wk_cn_count}, EN={wk_en_count}")
+    # ── 4. Auto-discover latest weekly HTML ──
+    wk_entries = sorted(WEEKLY_DIR.glob("weekly-*.html"), reverse=True)
+    wk_cn_path = next((p for p in wk_entries if p.stem.endswith("_cn")), None)
+    wk_en_path = next((p for p in wk_entries if not p.stem.endswith("_cn")), None)
+    wk_cn_count = wk_cn_path.read_text(encoding="utf-8").count('<div class="card">') if wk_cn_path else 0
+    wk_en_count = wk_en_path.read_text(encoding="utf-8").count('<div class="card">') if wk_en_path else 0
+    wk_slug = wk_en_path.stem if wk_en_path else "weekly"
+    # Extract week label from slug: "weekly-2026-07-20_2026-07-25" → "2026-07-20 ~ 2026-07-25"
+    wk_label = wk_slug.replace("weekly-", "").replace("_", " ~ ") if wk_slug.startswith("weekly") else wk_slug
+    print(f"  Weekly: CN={wk_cn_count}, EN={wk_en_count} ({wk_label})")
 
     # ── 5. Build new index.html ──
     index_html = build_index(
         daily_entries=daily,
-        weekly_entry=("weekly-2026-07-20_2026-07-25", wk_cn_count, wk_en_count, False)
+        weekly_entry=(wk_slug, wk_cn_count, wk_en_count, False),
+        wk_label=wk_label
     )
     (ROOT / "index.html").write_text(index_html, encoding="utf-8")
     print("\n✅ index.html rebuilt with accordion layout")
