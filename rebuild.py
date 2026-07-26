@@ -1,0 +1,325 @@
+#!/usr/bin/env python3
+"""
+Rebuild weekly_news_rep: generate missing weekly HTML, clean duplicates,
+rewrite index.html with accordion layout.
+"""
+import html
+import re
+from pathlib import Path
+from datetime import date
+
+ROOT = Path("/home/jojo/projects/weekly_news_rep")
+WEEKLY_DIR = ROOT / "weekly"
+BRIEFINGS = Path("/home/jojo/projects/au-renewables-agent/briefings")
+
+# ── CSS shared across all pages ──
+BASE_CSS = """\
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+       background: #f8fafc; color: #1e293b; line-height: 1.7; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+header.hero { background: #fff; border-radius: 16px; padding: 24px 24px 16px;
+              margin-bottom: 24px; text-align: center;
+              border-top: 5px solid #16a34a;
+              box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+header.hero img.logo { height: 160px; margin-bottom: 8px; }
+header.hero h1 { font-size: 24px; color: #166534; margin-bottom: 6px; }
+header.hero .sub { font-size: 14px; color: #64748b; }
+nav.toc { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+          padding: 12px 16px; margin-bottom: 24px; font-size: 14px;
+          display: flex; flex-wrap: wrap; gap: 4px 14px; }
+nav.toc a { color: #2563eb; text-decoration: none; white-space: nowrap; }
+h2.sec { font-size: 18px; margin: 32px 0 12px; padding-left: 12px; border-left: 5px solid #16a34a; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+        padding: 14px 18px; margin-bottom: 12px; }
+.card .title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+.card .meta { font-size: 13px; color: #64748b; margin-bottom: 6px; }
+.card .meta a { color: #2563eb; text-decoration: none; word-break: break-all; }
+.card .point { font-size: 14.5px; }
+footer.src { margin-top: 40px; font-size: 13px; color: #64748b; }
+footer.src li { margin-left: 20px; }
+a.back { color: #2563eb; text-decoration: none; font-size: 14px; }
+
+/* ── list items (index page) ── */
+.list-item { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px 20px;
+             margin-bottom:12px; display:block; text-decoration:none; color:inherit;
+             cursor:pointer; position: relative; overflow: hidden; }
+.list-item:hover { border-color:#16a34a; }
+.list-item .d { font-weight:600; font-size:17px; }
+.list-item .c { font-size:13px; color:#64748b; }
+.badge-new { position: absolute; top: 8px; right: 8px; background: #dc2626; color: #fff;
+  font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: .5px; }
+
+/* ── accordion ── */
+.week-toggle { cursor: pointer; user-select: none; }
+.week-toggle .arrow { display: inline-block; transition: transform 0.2s; margin-right: 4px; }
+.week-toggle.open .arrow { transform: rotate(90deg); }
+.week-body { display: none; padding: 8px 0 0 0; }
+.week-body.open { display: block; }
+.week-body .sub-item { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 12px 16px; margin-bottom: 8px; display: block; text-decoration: none; color: inherit; }
+.week-body .sub-item:hover { border-color: #16a34a; background: #fff; }
+.week-body .sub-item .sd { font-weight: 600; font-size: 15px; }
+.week-body .sub-item .sc { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+/* ── lang toggle ── */
+.lang-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 24px; }
+.lang-toggle button { border: 1px solid #d1d5db; background: #fff; color: #64748b;
+  padding: 8px 24px; cursor: pointer; font-size: 14px; font-weight: 500;
+  transition: all .15s; }
+.lang-toggle button:first-child { border-radius: 8px 0 0 8px; }
+.lang-toggle button:last-child { border-radius: 0 8px 8px 0; }
+.lang-toggle button.active { background: #16a34a; color: #fff; border-color: #16a34a; }
+.lang-section h3 { font-size: 14px; color: #94a3b8; text-transform: uppercase;
+  letter-spacing: .5px; margin-bottom: 10px; }
+"""
+
+
+def parse_weekly_md(text: str, is_cn: bool = False):
+    """Parse weekly markdown (English or Chinese format)."""
+    src_label = "来源" if is_cn else "Source"
+    point_label = "要点" if is_cn else "Key point"
+    title = ""
+    sections = []  # (name, [{title, meta, point}])
+    cur = None
+    item = None
+    for line in text.splitlines():
+        stripped = line.strip()
+        if line.startswith("# "):
+            title = line[2:].strip()
+        elif line.startswith("## "):
+            name = line[3:].strip()
+            cur = {"name": name, "items": []}
+            sections.append(cur)
+            item = None
+        elif cur is not None and stripped.startswith("- ") and not stripped.startswith("- Source") and not stripped.startswith("- " + src_label) and not stripped.startswith("- Key point") and not stripped.startswith("- " + point_label):
+            # new item title
+            item = {"title": stripped[2:].strip(), "meta": "", "point": ""}
+            cur["items"].append(item)
+        elif item is not None:
+            if stripped.startswith(f"- {src_label}:") or stripped.startswith(f"- {src_label}："):
+                item["meta"] = stripped[2:].strip()
+            elif stripped.startswith(f"- {point_label}:") or stripped.startswith(f"- {point_label}："):
+                item["point"] = stripped[2:].strip()
+    return title, sections
+
+
+def render_weekly_html(md_path: Path, is_cn: bool = False) -> str:
+    """Generate a standalone weekly briefing HTML page."""
+    text = md_path.read_text(encoding="utf-8")
+    title, sections = parse_weekly_md(text, is_cn)
+    date_slug = md_path.stem
+
+    toc = "".join(
+        f'<a href="#s{i}">{html.escape(s["name"])}</a>'
+        for i, s in enumerate(sections)
+    )
+    body_parts = []
+    for i, s in enumerate(sections):
+        body_parts.append(
+            f'<h2 class="sec" id="s{i}">{html.escape(s["name"])}</h2>'
+        )
+        for it in s["items"]:
+            # render meta
+            meta_html = ""
+            if it["meta"]:
+                # format: "来源：Source | date | url" or "Source: Source | date | url"
+                clean = re.sub(r'^(来源：|来源:|Source:|Source：)\s*', '', it["meta"])
+                parts = [p.strip() for p in clean.split("|")]
+                meta_segments = []
+                for p in parts:
+                    if p.startswith("http"):
+                        esc = html.escape(p)
+                        meta_segments.append(
+                            f'<a href="{esc}" target="_blank" rel="noopener">原文链接</a>'
+                        )
+                    else:
+                        meta_segments.append(html.escape(p))
+                meta_html = '<div class="meta">' + " · ".join(meta_segments) + "</div>"
+
+            body_parts.append(
+                '<div class="card">'
+                f'<div class="title">{html.escape(it["title"])}</div>'
+                f'{meta_html}'
+                f'<div class="point">{html.escape(it["point"])}</div>'
+                "</div>"
+            )
+
+    n = sum(len(s["items"]) for s in sections)
+    favicon = "../wiseway_logo.png"
+    logo = "../gcgf_logo.png"
+    back = "../index.html"
+
+    return f"""<!DOCTYPE html>
+<html lang="{'zh-CN' if is_cn else 'en'}"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="{favicon}">
+<title>Renewable Energy News in AU – {date_slug}</title><style>{BASE_CSS}</style></head>
+<body><div class="wrap">
+<a class="back" href="{back}">← All Briefings</a>
+<header class="hero">
+  <img class="logo" src="{logo}" alt="GCGF Logo">
+  <h1>{html.escape(title)}</h1>
+  <div class="sub">{date_slug} · {n} items</div>
+</header>
+<nav class="toc">{toc}</nav>
+{"".join(body_parts)}
+<footer class="src" style="margin-top:40px;font-size:13px;color:#64748b">
+<p>由 au-renewables-agent 自动生成</p></footer>
+</div></body></html>"""
+
+
+def build_index(daily_entries, weekly_entry):
+    """Build index.html with accordion layout.
+
+    daily_entries: [(date_str, count_cn, count_en), ...]
+    weekly_entry: (slug, count_cn, count_en, has_new)
+    """
+    today = date.today().strftime("%Y-%m-%d")
+    wk_slug, wk_cn, wk_en, has_new = weekly_entry
+
+    # ── Chinese section ──
+    badge = '<span class="badge-new">NEW</span>' if has_new else ''
+    cn_weekly = f"""<div class="week-toggle list-item" onclick="toggleWeek(this)" style="position:relative;overflow:hidden">
+{badge}<span class="arrow">▶</span> <span class="d">📅 2026-07-20 ~ 2026-07-25</span>
+<div class="c">{wk_cn} 条信息 · 点击展开/收起周报</div>
+</div>
+<div class="week-body" id="week-body-cn">
+"""
+
+    for d, cn, en in daily_entries:
+        cn_weekly += f'<a class="sub-item" href="weekly/{d}.html"><div class="sd">📅 {d}</div><div class="sc">{cn} 条信息 · 点击查看日简报</div></a>\n'
+
+    cn_weekly += "</div>"
+
+    # ── English section ──
+    en_weekly = f"""<div class="week-toggle list-item" onclick="toggleWeek(this)" style="position:relative;overflow:hidden">
+{badge}<span class="arrow">▶</span> <span class="d">📅 2026-07-20 ~ 2026-07-25</span>
+<div class="c">{wk_en} items · Click to expand/collapse</div>
+</div>
+<div class="week-body" id="week-body-en">
+"""
+
+    for d, cn, en in daily_entries:
+        en_weekly += f'<a class="sub-item" href="weekly/{d}_en.html"><div class="sd">📅 {d}</div><div class="sc">{en} items · Daily Briefing</div></a>\n'
+
+    en_weekly += "</div>"
+
+    # ── JS for accordion + lang switch ──
+    js = """<script>
+function toggleWeek(el) {
+  el.classList.toggle('open');
+  var body = el.nextElementSibling;
+  body.classList.toggle('open');
+}
+function switchLang(lang) {
+  document.getElementById('btn-cn').classList.toggle('active', lang==='cn');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+  document.getElementById('section-cn').style.display = lang==='cn' ? '' : 'none';
+  document.getElementById('section-en').style.display = lang==='en' ? '' : 'none';
+}
+</script>"""
+
+    return f"""<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="wiseway_logo.png">
+<title>Renewable Energy News in AU</title><style>{BASE_CSS}</style></head>
+<body><div class="wrap">
+<header class="hero">
+  <img class="logo" src="gcgf_logo.png" alt="GCGF Logo">
+  <h1>Renewable Energy News in AU</h1>
+  <div class="sub">Last modified: {today}</div>
+</header>
+
+<div class="lang-toggle">
+  <button id="btn-cn" class="active" onclick="switchLang('cn')">中文</button>
+  <button id="btn-en" onclick="switchLang('en')">EN</button>
+</div>
+<div id="section-cn" class="lang-section">
+<h3>周报</h3>
+{cn_weekly}
+</div>
+<div id="section-en" class="lang-section" style="display:none">
+<h3>Weekly</h3>
+{en_weekly}
+</div>
+<footer style="margin-top:40px;text-align:center;font-size:13px;color:#94a3b8">
+  powered by <a href="https://github.com/nousresearch/hermes-agent" style="color:#2563eb;text-decoration:none">Hermes Agent</a>
+</footer>
+</div>
+{js}
+</body></html>"""
+
+
+def main():
+    # ── 1. Generate missing weekly HTML files ──
+    # EN version
+    en_md = BRIEFINGS / "weekly-2026-07-20_2026-07-25.md"
+    if en_md.exists():
+        en_html = render_weekly_html(en_md, is_cn=False)
+        (WEEKLY_DIR / "weekly-2026-07-20_2026-07-25.html").write_text(en_html, encoding="utf-8")
+        print("Generated: weekly-2026-07-20_2026-07-25.html")
+
+    # CN version
+    cn_md = BRIEFINGS / "weekly-2026-07-20_2026-07-25_cn.md"
+    if cn_md.exists():
+        cn_html = render_weekly_html(cn_md, is_cn=True)
+        (WEEKLY_DIR / "weekly-2026-07-20_2026-07-25_cn.html").write_text(cn_html, encoding="utf-8")
+        print("Generated: weekly-2026-07-20_2026-07-25_cn.html")
+
+    # ── 2. Remove unwanted files ──
+    to_remove = [
+        "2026-07-26.html",
+        "weekly-2026-07-13_2026-07-19.html",
+        "weekly-2026-07-13_2026-07-19_en.html",
+        "weekly-2026-07-20_2026-07-24.html",
+        "weekly-2026-07-20_2026-07-24_cn.html",
+    ]
+    for fname in to_remove:
+        fpath = WEEKLY_DIR / fname
+        if fpath.exists():
+            fpath.unlink()
+            print(f"Removed: {fname}")
+
+    # ── 3. Count items in daily briefing HTMLs ──
+    daily = []
+    for d in ["2026-07-21", "2026-07-22", "2026-07-23"]:
+        cn_path = WEEKLY_DIR / f"{d}.html"
+        en_path = WEEKLY_DIR / f"{d}_en.html"
+        cn_count = 0
+        en_count = 0
+        if cn_path.exists():
+            cn_text = cn_path.read_text(encoding="utf-8")
+            cn_count = cn_text.count('<div class="card">')
+        if en_path.exists():
+            en_text = en_path.read_text(encoding="utf-8")
+            en_count = en_text.count('<div class="card">')
+        daily.append((d, cn_count, en_count))
+        print(f"  {d}: CN={cn_count}, EN={en_count}")
+
+    # ── 4. Count weekly items ──
+    wk_cn_count = 0
+    wk_en_count = 0
+    wk_cn_path = WEEKLY_DIR / "weekly-2026-07-20_2026-07-25_cn.html"
+    wk_en_path = WEEKLY_DIR / "weekly-2026-07-20_2026-07-25.html"
+    if wk_cn_path.exists():
+        wk_cn_count = wk_cn_path.read_text(encoding="utf-8").count('<div class="card">')
+    if wk_en_path.exists():
+        wk_en_count = wk_en_path.read_text(encoding="utf-8").count('<div class="card">')
+    print(f"  Weekly: CN={wk_cn_count}, EN={wk_en_count}")
+
+    # ── 5. Build new index.html ──
+    index_html = build_index(
+        daily_entries=daily,
+        weekly_entry=("weekly-2026-07-20_2026-07-25", wk_cn_count, wk_en_count, False)
+    )
+    (ROOT / "index.html").write_text(index_html, encoding="utf-8")
+    print("\n✅ index.html rebuilt with accordion layout")
+    print(f"   Daily briefings: {len(daily)} days")
+    print(f"   Weekly: {wk_cn_count} CN / {wk_en_count} EN items")
+
+
+if __name__ == "__main__":
+    main()
