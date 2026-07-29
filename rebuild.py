@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
 Rebuild weekly_news_rep: generate missing weekly HTML, clean duplicates,
-rewrite index.html with accordion layout.
+rewrite index.html with multi-week accordion layout.
+Each calendar week gets its own independent accordion section.
 """
 import html
 import re
 from pathlib import Path
-from datetime import date
+from datetime import date, timedelta
+from collections import defaultdict
 
 ROOT = Path("/home/jojo/projects/weekly_news_rep")
 WEEKLY_DIR = ROOT / "weekly"
@@ -64,6 +66,9 @@ a.back { color: #2563eb; text-decoration: none; font-size: 14px; }
 .week-body .sub-item .sc { font-size: 12px; color: #64748b; margin-top: 2px; }
 .week-body .weekly-card { background: #f0fdf4; border: 1.5px solid #16a34a; border-radius: 10px; }
 .week-body .weekly-card:hover { background: #dcfce7; }
+.week-separator { font-size: 13px; color: #94a3b8; text-transform: uppercase;
+  letter-spacing: .5px; margin: 28px 0 8px; padding-left: 4px; }
+.week-separator:first-of-type { margin-top: 0; }
 
 /* ── lang toggle ── */
 .lang-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 24px; }
@@ -123,10 +128,8 @@ def render_weekly_html(md_path: Path, is_cn: bool = False) -> str:
             f'<h2 class="sec" id="s{i}">{html.escape(s["name"])}</h2>'
         )
         for it in s["items"]:
-            # render meta
             meta_html = ""
             if it["meta"]:
-                # format: "来源：Source | date | url" or "Source: Source | date | url"
                 clean = re.sub(r'^(来源：|来源:|Source:|Source：)\s*', '', it["meta"])
                 parts = [p.strip() for p in clean.split("|")]
                 meta_segments = []
@@ -172,50 +175,102 @@ def render_weekly_html(md_path: Path, is_cn: bool = False) -> str:
 </div></body></html>"""
 
 
-def build_index(daily_entries, weekly_entry, wk_label):
-    """Build index.html with accordion layout.
+def monday_of_week(d: date) -> date:
+    """Return the Monday of the ISO week containing d."""
+    return d - timedelta(days=d.weekday())
 
-    daily_entries: [(date_str, count_cn, count_en), ...]
-    weekly_entry: (slug, count_cn, count_en, has_new)
-    wk_label: display label e.g. "2026-07-20 ~ 2026-07-25"
+
+def build_index(weeks_data, weekly_map_cn, weekly_map_en):
+    """Build index.html with multi-week accordion layout.
+
+    weeks_data: OrderedDict of week_key -> list of (date_str, cn_count, en_count)
+               Sorted newest first.
+    weekly_map_cn: week_key -> (slug, count) or None
+    weekly_map_en: week_key -> (slug, count) or None
     """
     today = date.today().strftime("%Y-%m-%d")
-    wk_slug, wk_cn, wk_en, has_new = weekly_entry
+    week_keys = list(weeks_data.keys())
+    is_first = True
 
-    # ── Chinese section ──
-    badge = '<span class="badge-new">NEW</span>' if has_new else ''
-    cn_weekly = f"""<div class="week-toggle list-item" onclick="toggleWeek(this)" style="position:relative;overflow:hidden">
+    cn_sections = []
+    en_sections = []
+
+    for wk in week_keys:
+        dailies = weeks_data[wk]  # already sorted newest first within week
+
+        # --- Compute week label ---
+        if len(dailies) >= 1:
+            last_day = dailies[-1][0]   # oldest in this week
+            first_day = dailies[0][0]   # newest in this week
+        else:
+            m = date.fromisoformat(wk)
+            last_day = m.strftime("%Y-%m-%d")
+            first_day = (m + timedelta(days=6)).strftime("%Y-%m-%d")
+
+        wk_label = f"{last_day} ~ {first_day}"
+        # count total items
+        total_cn = sum(cn for _, cn, _ in dailies)
+        total_en = sum(en for _, _, en in dailies)
+
+        # NEW badge only on latest week
+        badge = '<span class="badge-new">NEW</span>' if is_first else ''
+        is_first = False
+
+        # Weekly report lookup
+        wk_cn = weekly_map_cn.get(wk)
+        wk_en = weekly_map_en.get(wk)
+
+        # --- Chinese section ---
+        cn_weekly_cn_count = wk_cn[1] if wk_cn else 0
+        cn_desc = f"{total_cn} 条日报" if total_cn > 0 else ""
+        if cn_weekly_cn_count:
+            cn_desc = f"{cn_weekly_cn_count} 条周报 + {total_cn} 条日报" if total_cn else f"{cn_weekly_cn_count} 条周报"
+
+        cn_section = f"""<div class="week-toggle list-item" onclick="toggleWeek(this)" style="position:relative;overflow:hidden">
 {badge}<span class="arrow">▶</span> <span class="d">📅 {wk_label}</span>
-<div class="c">{wk_cn} 条信息 · 点击展开/收起周报</div>
+<div class="c">{cn_desc} · 点击展开/收起</div>
 </div>
-<div class="week-body" id="week-body-cn">
-<a class="sub-item weekly-card" href="weekly/{wk_slug}_cn.html">
+<div class="week-body">
+"""
+        if wk_cn:
+            slug, count = wk_cn
+            cn_section += f"""<a class="sub-item weekly-card" href="weekly/{slug}.html">
   <div class="sd">📋 本周精选周报</div>
-  <div class="sc">{wk_cn} 条要闻 · 点击阅读完整周报</div>
+  <div class="sc">{count} 条要闻 · 点击阅读完整周报</div>
 </a>
 """
 
-    for d, cn, en in daily_entries:
-        cn_weekly += f'<a class="sub-item" href="weekly/{d}.html"><div class="sd">📅 {d}</div><div class="sc">{cn} 条信息 · 点击查看日简报</div></a>\n'
+        for d, cn, en in dailies:
+            cn_section += f'<a class="sub-item" href="weekly/{d}.html"><div class="sd">📅 {d}</div><div class="sc">{cn} 条信息 · 点击查看日简报</div></a>\n'
 
-    cn_weekly += "</div>"
+        cn_section += "</div>"
+        cn_sections.append(cn_section)
 
-    # ── English section ──
-    en_weekly = f"""<div class="week-toggle list-item" onclick="toggleWeek(this)" style="position:relative;overflow:hidden">
+        # --- English section ---
+        en_weekly_en_count = wk_en[1] if wk_en else 0
+        en_desc = f"{total_en} dailies" if total_en > 0 else "No dailies"
+        if en_weekly_en_count:
+            en_desc = f"{en_weekly_en_count} weekly + {total_en} dailies" if total_en else f"{en_weekly_en_count} weekly"
+
+        en_section = f"""<div class="week-toggle list-item" onclick="toggleWeek(this)" style="position:relative;overflow:hidden">
 {badge}<span class="arrow">▶</span> <span class="d">📅 {wk_label}</span>
-<div class="c">{wk_en} items · Click to expand/collapse</div>
+<div class="c">{en_desc} · Click to expand/collapse</div>
 </div>
-<div class="week-body" id="week-body-en">
-<a class="sub-item weekly-card" href="weekly/{wk_slug}.html">
+<div class="week-body">
+"""
+        if wk_en:
+            slug, count = wk_en
+            en_section += f"""<a class="sub-item weekly-card" href="weekly/{slug}.html">
   <div class="sd">📋 Weekly Highlights</div>
-  <div class="sc">{wk_en} items · Read full weekly report</div>
+  <div class="sc">{count} items · Read full weekly report</div>
 </a>
 """
 
-    for d, cn, en in daily_entries:
-        en_weekly += f'<a class="sub-item" href="weekly/{d}_en.html"><div class="sd">📅 {d}</div><div class="sc">{en} items · Daily Briefing</div></a>\n'
+        for d, cn, en in dailies:
+            en_section += f'<a class="sub-item" href="weekly/{d}_en.html"><div class="sd">📅 {d}</div><div class="sc">{en} items · Daily Briefing</div></a>\n'
 
-    en_weekly += "</div>"
+        en_section += "</div>"
+        en_sections.append(en_section)
 
     # ── JS for accordion + lang switch ──
     js = """<script>
@@ -249,12 +304,10 @@ function switchLang(lang) {
   <button id="btn-en" onclick="switchLang('en')">EN</button>
 </div>
 <div id="section-cn" class="lang-section">
-<h3>周报</h3>
-{cn_weekly}
+{"".join(cn_sections)}
 </div>
 <div id="section-en" class="lang-section" style="display:none">
-<h3>Weekly</h3>
-{en_weekly}
+{"".join(en_sections)}
 </div>
 <footer style="margin-top:40px;text-align:center;font-size:13px;color:#94a3b8">
   powered by <a href="https://wiseway.ai" style="color:#2563eb;text-decoration:none">Wiseway.ai</a>
@@ -262,6 +315,15 @@ function switchLang(lang) {
 </div>
 {js}
 </body></html>"""
+
+
+def parse_weekly_slug(slug: str):
+    """Parse weekly slug like 'weekly-2026-07-20_2026-07-25'
+    Returns (start_date, end_date) or None."""
+    m = re.match(r'weekly-(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})', slug)
+    if m:
+        return date.fromisoformat(m.group(1)), date.fromisoformat(m.group(2))
+    return None
 
 
 def main():
@@ -282,42 +344,67 @@ def main():
             html_path.unlink()
             print(f"Removed stale: {html_path.name}")
 
-    # ── 3. Auto-discover daily briefing HTMLs (date-named, exclude _en and weekly) ──
+    # ── 3. Auto-discover daily briefing HTMLs ──
     daily_files = sorted(
         [p.stem for p in WEEKLY_DIR.glob("20*.html")
          if not p.stem.startswith("weekly") and not p.stem.endswith("_en")],
         reverse=True
     )
-    daily = []
+    daily_entries = []
     for d in daily_files:
         cn_path = WEEKLY_DIR / f"{d}.html"
         en_path = WEEKLY_DIR / f"{d}_en.html"
         cn_count = cn_path.read_text(encoding="utf-8").count('<div class="card">') if cn_path.exists() else 0
         en_count = en_path.read_text(encoding="utf-8").count('<div class="card">') if en_path.exists() else 0
-        daily.append((d, cn_count, en_count))
+        daily_entries.append((d, cn_count, en_count))
         print(f"  {d}: CN={cn_count}, EN={en_count}")
 
-    # ── 4. Auto-discover latest weekly HTML ──
-    wk_entries = sorted(WEEKLY_DIR.glob("weekly-*.html"), reverse=True)
-    wk_cn_path = next((p for p in wk_entries if p.stem.endswith("_cn")), None)
-    wk_en_path = next((p for p in wk_entries if not p.stem.endswith("_cn")), None)
-    wk_cn_count = wk_cn_path.read_text(encoding="utf-8").count('<div class="card">') if wk_cn_path else 0
-    wk_en_count = wk_en_path.read_text(encoding="utf-8").count('<div class="card">') if wk_en_path else 0
-    wk_slug = wk_en_path.stem if wk_en_path else "weekly"
-    # Extract week label from slug: "weekly-2026-07-20_2026-07-25" → "2026-07-20 ~ 2026-07-25"
-    wk_label = wk_slug.replace("weekly-", "").replace("_", " ~ ") if wk_slug.startswith("weekly") else wk_slug
-    print(f"  Weekly: CN={wk_cn_count}, EN={wk_en_count} ({wk_label})")
+    # ── 4. Group dailies by calendar week (Monday as week start) ──
+    weeks_data = defaultdict(list)
+    for d_str, cn, en in daily_entries:
+        d = date.fromisoformat(d_str)
+        monday = monday_of_week(d)
+        week_key = monday.strftime("%Y-%m-%d")
+        weeks_data[week_key].append((d_str, cn, en))
 
-    # ── 5. Build new index.html ──
-    index_html = build_index(
-        daily_entries=daily,
-        weekly_entry=(wk_slug, wk_cn_count, wk_en_count, True),
-        wk_label=wk_label
-    )
+    # Sort week keys newest first; within each week keep newest-first order
+    from collections import OrderedDict
+    sorted_weeks = OrderedDict()
+    for wk in sorted(weeks_data.keys(), reverse=True):
+        sorted_weeks[wk] = weeks_data[wk]
+
+    # ── 5. Map weekly reports to their week keys ──
+    weekly_map_cn = {}
+    weekly_map_en = {}
+    wk_entries = sorted(WEEKLY_DIR.glob("weekly-*.html"), reverse=True)
+    for p in wk_entries:
+        slug = p.stem
+        parsed = parse_weekly_slug(slug)
+        if parsed is None:
+            continue
+        start_date, end_date = parsed
+        week_key = monday_of_week(start_date).strftime("%Y-%m-%d")
+        count = p.read_text(encoding="utf-8").count('<div class="card">')
+
+        if slug.endswith("_cn"):
+            weekly_map_cn[week_key] = (slug, count)
+            print(f"  Weekly CN: {slug} -> week {week_key} ({count} items)")
+        else:
+            weekly_map_en[week_key] = (slug, count)
+            print(f"  Weekly EN: {slug} -> week {week_key} ({count} items)")
+
+    # ── 6. Build new index.html ──
+    index_html = build_index(sorted_weeks, weekly_map_cn, weekly_map_en)
     (ROOT / "index.html").write_text(index_html, encoding="utf-8")
-    print("\n✅ index.html rebuilt with accordion layout")
-    print(f"   Daily briefings: {len(daily)} days")
-    print(f"   Weekly: {wk_cn_count} CN / {wk_en_count} EN items")
+
+    print("\n✅ index.html rebuilt with multi-week accordion layout")
+    print(f"   Weeks: {len(sorted_weeks)}")
+    for wk, entries in sorted_weeks.items():
+        wk_cn = weekly_map_cn.get(wk)
+        wk_en = weekly_map_en.get(wk)
+        cn_wk = f" + 周报({wk_cn[1]}条)" if wk_cn else ""
+        en_wk = f" + weekly({wk_en[1]} items)" if wk_en else ""
+        print(f"     {wk}: {len(entries)} dailies{cn_wk}{en_wk}")
 
 
 if __name__ == "__main__":
