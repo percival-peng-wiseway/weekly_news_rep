@@ -198,16 +198,10 @@ def build_index(weeks_data, weekly_map_cn, weekly_map_en):
     for wk in week_keys:
         dailies = weeks_data[wk]  # already sorted newest first within week
 
-        # --- Compute week label ---
-        if len(dailies) >= 1:
-            last_day = dailies[-1][0]   # oldest in this week
-            first_day = dailies[0][0]   # newest in this week
-        else:
-            m = date.fromisoformat(wk)
-            last_day = m.strftime("%Y-%m-%d")
-            first_day = (m + timedelta(days=6)).strftime("%Y-%m-%d")
-
-        wk_label = f"{last_day} ~ {first_day}"
+        # --- Compute week label: Monday ~ Friday of that week ---
+        monday = date.fromisoformat(wk)
+        friday = monday + timedelta(days=4)
+        wk_label = f"{monday.strftime('%Y-%m-%d')} ~ {friday.strftime('%Y-%m-%d')}"
         # count total items
         total_cn = sum(cn for _, cn, _ in dailies)
         total_en = sum(en for _, _, en in dailies)
