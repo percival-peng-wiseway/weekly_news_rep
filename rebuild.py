@@ -294,13 +294,13 @@ function switchLang(lang) {
 </header>
 
 <div class="lang-toggle">
-  <button id="btn-cn" class="active" onclick="switchLang('cn')">中文</button>
-  <button id="btn-en" onclick="switchLang('en')">EN</button>
+  <button id="btn-cn" onclick="switchLang('cn')">中文</button>
+  <button id="btn-en" class="active" onclick="switchLang('en')">EN</button>
 </div>
-<div id="section-cn" class="lang-section">
+<div id="section-cn" class="lang-section" style="display:none">
 {"".join(cn_sections)}
 </div>
-<div id="section-en" class="lang-section" style="display:none">
+<div id="section-en" class="lang-section">
 {"".join(en_sections)}
 </div>
 <footer style="margin-top:40px;text-align:center;font-size:13px;color:#94a3b8">
