@@ -137,7 +137,7 @@ def render_weekly_html(md_path: Path, is_cn: bool = False) -> str:
                     if p.startswith("http"):
                         esc = html.escape(p)
                         meta_segments.append(
-                            f'<a href="{esc}" target="_blank" rel="noopener">原文链接</a>'
+                            f'<a href="{esc}" target="_blank" rel="noopener">Source</a>'
                         )
                     else:
                         meta_segments.append(html.escape(p))
