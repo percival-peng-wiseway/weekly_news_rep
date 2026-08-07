@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ABN Guard — Verify suppliers before you pay</title>
+    <meta
+      name="description"
+      content="ABN Guard verifies supplier ABN/GST status and highlights mismatches from contracts, so finance teams avoid payment mistakes and onboarding risk."
+    />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --panel: #ffffff;
+        --ink: #0b1220;
+        --muted: #4b5563;
+        --brand: #16a34a;
+        --brand-dark: #15803d;
+        --line: #e5e7eb;
+        --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        color: var(--ink);
+        background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+        line-height: 1.6;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: inherit;
+      }
+      .container {
+        width: min(1100px, 92vw);
+        margin: 0 auto;
+      }
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.88);
+        border-bottom: 1px solid var(--line);
+      }
+      .nav {
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+      }
+      .badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--brand), #22c55e);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+      }
+      nav ul {
+        display: flex;
+        gap: 22px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        align-items: center;
+      }
+      nav a {
+        text-decoration: none;
+        color: #0f172a;
+        font-weight: 600;
+      }
+      nav a:hover {
+        color: var(--brand-dark);
+      }
+      .cta {
+        border: 1px solid var(--brand);
+        color: var(--brand);
+        padding: 9px 14px;
+        border-radius: 10px;
+        font-weight: 700;
+      }
+      .hero {
+        padding: 68px 0 54px;
+        display: grid;
+        gap: 48px;
+        grid-template-columns: 1.2fr 1fr;
+        align-items: center;
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #15803d;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      h1 {
+        font-size: clamp(2.1rem, 4vw, 3.3rem);
+        line-height: 1.1;
+        margin: 10px 0;
+      }
+      .hero p {
+        color: var(--muted);
+        margin: 0;
+        max-width: 60ch;
+      }
+      .hero-cta {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        border-radius: 12px;
+        border: 0;
+        cursor: pointer;
+        padding: 12px 18px;
+        font-size: 0.98rem;
+        font-weight: 700;
+      }
+      .btn.primary {
+        background: var(--brand);
+        color: white;
+        box-shadow: var(--shadow);
+      }
+      .btn.secondary {
+        background: #fff;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .hero-panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+      }
+      .metric {
+        display: grid;
+        gap: 2px;
+      }
+      .metric strong {
+        font-size: 1.7rem;
+      }
+      .metric span {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      section {
+        padding: 28px 0;
+      }
+      .section-title {
+        margin: 0 0 22px;
+        font-size: clamp(1.3rem, 2.2vw, 2rem);
+      }
+      .section-head p {
+        color: var(--muted);
+        max-width: 62ch;
+        margin: 0;
+      }
+      .pain-grid,
+      .feature-grid,
+      .proof {
+        display: grid;
+        gap: 16px;
+      }
+      .pain-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .feature-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+      }
+      .card h3 {
+        margin: 0 0 10px;
+      }
+      .card p {
+        color: var(--muted);
+        margin: 0;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      .step {
+        background: #f0fdf4;
+        border-left: 4px solid var(--brand);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .step h4 {
+        margin: 8px 0 6px;
+      }
+      .faq {
+        display: grid;
+        gap: 10px;
+      }
+      .q {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+      }
+      .q button {
+        border: 0;
+        width: 100%;
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: transparent;
+      }
+      .q p {
+        padding: 0 16px 14px;
+        margin: 0;
+        color: var(--muted);
+        display: none;
+      }
+      .q.open p {
+        display: block;
+      }
+      .proof {
+        grid-template-columns: 1fr 1fr;
+      }
+      .proof .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #ecfdf5;
+        color: #166534;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .cta-band {
+        margin-top: 12px;
+        background: #052e16;
+        color: #ecfdf5;
+        border-radius: 16px;
+        padding: 28px;
+        text-align: center;
+        display: grid;
+        gap: 10px;
+      }
+      .cta-band .btn {
+        justify-self: center;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        margin-top: 34px;
+        padding: 18px 0 36px;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+      .inline-link {
+        color: #166534;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .inline-link:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 980px) {
+        .hero,
+        .pain-grid,
+        .feature-grid,
+        .proof,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+        nav ul {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <div class="container nav">
+        <div class="brand"><span class="badge">A</span>ABN Guard</div>
+        <nav>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#workflow">How it works</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </nav>
+        <a class="cta" href="#contact">Get early access</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Supplier verification made simple</p>
+          <h1>Know exactly who you are paying before funds leave your account.</h1>
+          <p>
+            ABN Guard extracts ABN/GST details from supplier contracts and instantly
+            validates them against the official ABN register. Your team gets a clear
+            verification summary in seconds, with mismatches flagged before onboarding or payment.</p>
+          <div class="hero-cta">
+            <a class="btn primary" href="#contact">Start free pilot</a>
+            <a class="btn secondary" href="#workflow">See workflow</a>
+          </div>
+        </div>
+        <aside class="hero-panel">
+          <div class="metric">
+            <strong>2 min</strong>
+            <span>Average time to extract and verify one contract set</span>
+          </div>
+          <hr style="border:0;border-top:1px solid var(--line);margin:16px 0;" />
+          <div class="metric">
+            <strong>100%</strong>
+            <span>Visibility on supplier ABN/GST status changes and bank reference checks</span>
+          </div>
+          <hr style="border:0;border-top:1px solid var(--line);margin:16px 0;" />
+          <div class="metric">
+            <strong>Local-first</strong>
+            <span>Data stays in your environment for security and traceability</span>
+          </div>
+        </aside>
+      </section>
+
+      <section id="features">
+        <div class="section-head">
+          <h2 class="section-title">Pain points your team faces every month</h2>
+          <p>
+            Manual supplier checks are slow and inconsistent. ABN Guard turns contract paperwork
+            into an auditable verification workflow with fewer slips and fewer late payments.</p>
+        </div>
+        <div class="pain-grid">
+          <article class="card">
+            <h3>Manual lookup fatigue</h3>
+            <p>
+              Verify ABN, GST status and entity name from contract PDFs in one click and avoid repetitive copy-check tasks.</p>
+          </article>
+          <article class="card">
+            <h3>Hidden onboarding risk</h3>
+            <p>
+              Detect mismatch and inactive registrations before adding suppliers to your master data.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Payment errors</h3>
+            <p>
+              Validate bank references and supplier identity before every payment batch to reduce finance escalations.</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2 class="section-title" id="workflow">How ABN Guard works</h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <span style="font-weight:700">1. Upload</span>
+            <h4>Drop contracts</h4>
+            <p>Upload PDF, DOCX, or TXT contract evidence.</p>
+          </div>
+          <div class="step">
+            <span style="font-weight:700">2. Extract</span>
+            <h4>Parse supplier details</h4>
+            <p>ABN, ABN status, GST registration, and bank details are extracted automatically.</p>
+          </div>
+          <div class="step">
+            <span style="font-weight:700">3. Verify</span>
+            <h4>Cross-check official sources</h4>
+            <p>Results are compared to official ABN records to spot discrepancies.</p>
+          </div>
+          <div class="step">
+            <span style="font-weight:700">4. Review</span>
+            <h4>Approve and track</h4>
+            <p>Teams review flagged risks and keep an audit trail for every supplier review.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2 class="section-title">Why teams choose ABN Guard</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="card">
+            <h3>Trust-first validation</h3>
+            <p>
+              Clear status tags for active/closed ABN and GST registration.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Local workspace model</h3>
+            <p>
+              Sensitive documents and supplier master references stay in your own workspace.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Action-ready summary</h3>
+            <p>
+              Export, share, and reference verified results in one place before onboarding or payments.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="faq">
+        <div class="section-head">
+          <h2 class="section-title">FAQs</h2>
+        </div>
+        <div class="faq">
+          <div class="q">
+            <button type="button">How quickly can my team start?</button>
+            <p>You can start with the demo flow immediately. Connect official lookup keys later when you are ready for full production checks.</p>
+          </div>
+          <div class="q">
+            <button type="button">Does this replace accounting software?</button>
+            <p>ABN Guard is a supplier verification layer. You keep your existing ERP/Payables and use ABN Guard as a pre-check.</p>
+          </div>
+          <div class="q">
+            <button type="button">How do we export results?</button>
+            <p>Results can be exported for audit logs and onboarding packs, and reviewed case-by-case inside the workspace.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="proof">
+          <article class="card">
+            <span class="pill">Use case: Procurement team</span>
+            <h3 style="margin-top: 10px;">From 30 mins to 3 mins per supplier check</h3>
+            <p class="muted" style="color:var(--muted);">
+              A procurement analyst uploads contract packs and receives an instant validation card for every supplier
+              record, with flags for ABN/GST issues before PO release.</p>
+          </article>
+          <article class="card">
+            <span class="pill">Use case: Finance Ops</span>
+            <h3 style="margin-top: 10px;">Reduce payment errors and review delays</h3>
+            <p style="color:var(--muted);">
+              Payment teams can confirm supplier identity and registration status at the same place where contract checks happen.
+            </p>
+          </article>
+        </div>
+
+        <div class="cta-band" id="contact">
+          <h2 style="margin: 0">Ready to test the second landing page concept?</h2>
+          <p style="margin: 0 auto; max-width: 60ch;">
+            Leave your team email and we will arrange a practical walkthrough using sample contracts and a
+            preloaded workspace.
+          </p>
+          <a class="btn primary" href="mailto:percivalpeng7@gmail.com?subject=ABN%20Guard%20landing%20page%20review">Request preview</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        ABN Guard © 2026 — Supplier verification, smarter and faster.
+        <span style="float:right"><a class="inline-link" href="https://abn-guard.percival-0ae.workers.dev/" target="_blank" rel="noreferrer">Current production</a></span>
+      </div>
+    </footer>
+
+    <script>
+      const q = document.querySelectorAll('.q button');
+      q.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const item = btn.parentElement;
+          item.classList.toggle('open');
+        });
+      });
+    </script>
+  </body>
+</html>
